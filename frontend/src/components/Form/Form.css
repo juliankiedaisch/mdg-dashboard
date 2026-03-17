@@ -1,0 +1,53 @@
+/* ========================================
+   Form Component Styles
+   ======================================== */
+
+.shared-form {
+  width: 100%;
+}
+
+.shared-form--vertical {
+  display: flex;
+  flex-direction: column;
+}
+
+.shared-form--horizontal {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.shared-form--horizontal > * {
+  flex: 1;
+  min-width: 200px;
+}
+
+/* Spacing variants */
+.shared-form--spacing-sm > * + * {
+  margin-top: var(--space-sm);
+}
+
+.shared-form--spacing-md > * + * {
+  margin-top: var(--space-md);
+}
+
+.shared-form--spacing-lg > * + * {
+  margin-top: var(--space-lg);
+}
+
+.shared-form--horizontal.shared-form--spacing-sm {
+  gap: var(--space-sm);
+}
+
+.shared-form--horizontal.shared-form--spacing-md {
+  gap: var(--space-md);
+}
+
+.shared-form--horizontal.shared-form--spacing-lg {
+  gap: var(--space-lg);
+}
+
+.shared-form--horizontal > * + * {
+  margin-top: 0;
+}

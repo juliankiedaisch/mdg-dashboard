@@ -1,0 +1,472 @@
+/* ====================================================================
+   AssistantAdminPage – module-specific styles only.
+   Layout, typography, inputs, tables, messages and spinners are
+   handled by the shared component library.
+   ==================================================================== */
+
+/* Stat-card row (status tab) */
+.assistant-admin__stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Detail-card row (status tab) */
+.assistant-admin__detail-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Section header (title + action button on the same row) */
+.assistant-admin__section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.assistant-admin__section-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text-primary, #111);
+  margin: 0 0 1rem 0;
+}
+
+.assistant-admin__section-header .assistant-admin__section-title {
+  margin-bottom: 0;
+}
+
+
+.assistant-admin__form-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+  color: var(--color-text-primary, #111);
+}
+
+.assistant-admin__form-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+/* Inline row (input + button side by side) */
+.assistant-admin__inline-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
+.assistant-admin__inline-row > *:first-child {
+  flex: 1;
+}
+
+/* List item header (name + actions) */
+.assistant-admin__item-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.assistant-admin__item-name {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.assistant-admin__item-meta {
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary, #555);
+  margin: 0;
+}
+
+.assistant-admin__item-actions {
+  display: flex;
+  gap: 0.375rem;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+/* Badge (active / inactive) */
+.assistant-admin__badge {
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.assistant-admin__badge--active {
+  background-color: var(--color-success-light, #d1fae5);
+  color: var(--color-success, #065f46);
+}
+
+.assistant-admin__badge--inactive {
+  background-color: var(--color-neutral-100, #f1f5f9);
+  color: var(--color-text-secondary, #555);
+}
+
+/* Status text colours */
+.assistant-admin__status-text--success { color: var(--color-success, #16a34a); }
+.assistant-admin__status-text--error   { color: var(--color-danger,  #dc2626); }
+
+/* Small helper text */
+.assistant-admin__text-sm {
+  font-size: 0.875rem;
+  margin: 0.25rem 0;
+  color: var(--color-text-primary, #111);
+}
+
+.assistant-admin__text-sm--info {
+  color: var(--color-primary, #2563eb);
+}
+
+/* Empty state */
+.assistant-admin__empty {
+  text-align: center;
+  color: var(--color-text-secondary, #888);
+  font-size: 0.875rem;
+  padding: 1.5rem 0;
+  margin: 0;
+}
+
+/* Checkbox label (filesystem source form) */
+.assistant-admin__label-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  margin-bottom: 0.75rem;
+}
+
+/* Config setting grid */
+.assistant-admin__config-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.75rem;
+  align-items: end;
+}
+
+/* Pipeline action buttons row */
+.assistant-admin__pipeline-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* WebSocket status indicator */
+.assistant-admin__ws-status {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  margin-left: auto;
+}
+.assistant-admin__ws-status--ok {
+  background: var(--color-success-light, #dcfce7);
+  color: var(--color-success, #16a34a);
+}
+.assistant-admin__ws-status--off {
+  background: var(--color-danger-light, #fee2e2);
+  color: var(--color-danger, #dc2626);
+}
+
+/* Pipeline live activity feed */
+.assistant-admin__pipeline-feed {
+  max-height: 480px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.assistant-admin__pipeline-event {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  border-left: 3px solid transparent;
+}
+.assistant-admin__pipeline-event--info {
+  border-left-color: var(--color-primary, #3b82f6);
+}
+.assistant-admin__pipeline-event--success {
+  border-left-color: var(--color-success, #16a34a);
+  background: var(--color-success-light, #dcfce7);
+}
+.assistant-admin__pipeline-event--warning {
+  border-left-color: var(--color-warning, #f59e0b);
+  background: var(--color-warning-light, #fef3c7);
+}
+.assistant-admin__pipeline-event--error {
+  border-left-color: var(--color-danger, #dc2626);
+  background: var(--color-danger-light, #fee2e2);
+}
+
+.assistant-admin__pipeline-event-time {
+  color: var(--color-text-muted, #9ca3af);
+  flex-shrink: 0;
+  min-width: 5.5em;
+}
+.assistant-admin__pipeline-event-badge {
+  display: inline-block;
+  padding: 0.05rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  flex-shrink: 0;
+  background: var(--color-bg-secondary, #f3f4f6);
+  color: var(--color-text-secondary, #6b7280);
+}
+.assistant-admin__pipeline-event-badge--fetch { background: #dbeafe; color: #1d4ed8; }
+.assistant-admin__pipeline-event-badge--chunk { background: #ede9fe; color: #7c3aed; }
+.assistant-admin__pipeline-event-badge--embed { background: #fce7f3; color: #be185d; }
+.assistant-admin__pipeline-event-badge--store { background: #d1fae5; color: #065f46; }
+.assistant-admin__pipeline-event-badge--worker { background: #e0e7ff; color: #3730a3; }
+.assistant-admin__pipeline-event-badge--error { background: #fee2e2; color: #dc2626; }
+
+.assistant-admin__pipeline-event-source {
+  color: var(--color-text-secondary, #6b7280);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.assistant-admin__pipeline-event-msg {
+  flex: 1;
+  word-break: break-word;
+}
+
+/* Progress bar */
+.assistant-admin__progress-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+.assistant-admin__progress-bar {
+  flex: 1;
+  height: 8px;
+  background: var(--color-bg-secondary, #e5e7eb);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.assistant-admin__progress-bar-fill {
+  height: 100%;
+  background: var(--color-primary, #3b82f6);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+.assistant-admin__progress-bar-label {
+  font-size: 0.75rem;
+  color: var(--color-text-muted, #6b7280);
+  flex-shrink: 0;
+  min-width: 8em;
+}
+
+/* Logs */
+.assistant-admin__logs-container {
+  max-height: 480px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.assistant-admin__log-entry {
+  display: flex;
+  align-items: baseline;
+  gap: 0.625rem;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.assistant-admin__log-badge {
+  display: inline-block;
+  padding: 0.1rem 0.45rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.assistant-admin__log-badge--error {
+  background-color: var(--color-danger-light, #fee2e2);
+  color: var(--color-danger, #dc2626);
+}
+
+.assistant-admin__log-badge--success {
+  background-color: var(--color-success-light, #d1fae5);
+  color: var(--color-success, #065f46);
+}
+
+.assistant-admin__log-message {
+  flex: 1;
+  color: var(--color-text-primary, #111);
+  word-break: break-word;
+}
+
+.assistant-admin__log-time {
+  color: var(--color-text-secondary, #888);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Log Filters */
+.assistant-admin__log-filters {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.assistant-admin__log-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.assistant-admin__log-filter-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-secondary, #555);
+}
+
+.assistant-admin__log-filter-select,
+.assistant-admin__log-filter-input {
+  padding: 0.375rem 0.625rem;
+  border: 1px solid var(--color-border, #d1d5db);
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  min-width: 150px;
+  background: var(--color-bg-primary, #fff);
+  color: var(--color-text-primary, #111);
+}
+
+.assistant-admin__log-filter-select:focus,
+.assistant-admin__log-filter-input:focus {
+  outline: none;
+  border-color: var(--color-primary, #2563eb);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+/* Log Pagination */
+.assistant-admin__log-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-border, #e5e7eb);
+}
+
+.assistant-admin__log-pagination-info {
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary, #666);
+}
+
+/* ── Tag Chips on Source Cards ─────────────────────────────────── */
+.assistant-admin__source-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-top: 0.5rem;
+}
+
+.assistant-admin__tag-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-border, #d1d5db);
+  background: var(--color-bg-secondary, #f3f4f6);
+  color: var(--color-text-secondary, #6b7280);
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.assistant-admin__tag-chip:hover {
+  border-color: var(--color-primary, #3b82f6);
+  background: var(--color-primary-light, #eff6ff);
+  color: var(--color-primary, #3b82f6);
+}
+
+.assistant-admin__tag-chip--active {
+  background: var(--color-primary, #3b82f6);
+  color: #fff;
+  border-color: var(--color-primary, #3b82f6);
+}
+
+.assistant-admin__tag-chip--active:hover {
+  background: var(--color-primary-dark, #2563eb);
+  border-color: var(--color-primary-dark, #2563eb);
+  color: #fff;
+}
+
+.assistant-admin__tag-chip--readonly {
+  cursor: default;
+  pointer-events: none;
+}
+
+.assistant-admin__tag-chip--readonly:hover {
+  background: var(--color-primary, #3b82f6);
+  border-color: var(--color-primary, #3b82f6);
+  color: #fff;
+}
+
+/* ── Info Card ─────────────────────────────────────────────────── */
+.assistant-admin__info-card {
+  border-left: 3px solid var(--color-primary, #3b82f6);
+  margin-bottom: 1rem;
+}
+
+/* ── Vector DB Debug ───────────────────────────────────────────── */
+.assistant-admin__debug-issues {
+  background: var(--color-danger-light, #fef2f2);
+  border: 1px solid var(--color-danger, #fecaca);
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.assistant-admin__text-sm--warning {
+  color: var(--color-danger, #dc2626);
+  font-weight: 600;
+}
+
+.assistant-admin__issue-list {
+  margin: 0.5rem 0 0 1.25rem;
+  padding: 0;
+  font-size: 0.8125rem;
+}
+
+.assistant-admin__issue-list li {
+  margin-bottom: 0.25rem;
+}
+
+.assistant-admin__link {
+  color: var(--color-primary, #3b82f6);
+  text-decoration: none;
+  font-size: 0.8125rem;
+}
+
+.assistant-admin__link:hover {
+  text-decoration: underline;
+}

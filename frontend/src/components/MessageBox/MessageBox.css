@@ -1,0 +1,68 @@
+/* ========================================
+   MessageBox Component Styles
+   ======================================== */
+
+.shared-message {
+  padding: 15px 20px;
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-lg);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  animation: shared-fade-in 0.3s ease-out;
+}
+
+.shared-message--success {
+  background-color: var(--color-success-bg);
+  color: var(--color-success-text);
+  border-left: 4px solid var(--color-success);
+}
+
+.shared-message--error {
+  background-color: var(--color-danger-bg);
+  color: var(--color-danger-text);
+  border-left: 4px solid var(--color-danger);
+}
+
+.shared-message--warning {
+  background-color: var(--color-warning-bg);
+  color: var(--color-warning-text);
+  border-left: 4px solid var(--color-warning);
+}
+
+.shared-message--info {
+  background-color: var(--color-info-bg);
+  color: var(--color-text-primary);
+  border-left: 4px solid var(--color-info);
+}
+
+.shared-message__text {
+  flex: 1;
+}
+
+.shared-message__dismiss {
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.7;
+  padding: 0;
+  line-height: 1;
+}
+
+.shared-message__dismiss:hover {
+  opacity: 1;
+}
+
+.shared-message a {
+  color: var(--color-action);
+  text-decoration: underline;
+  font-weight: var(--font-weight-semibold);
+}
+
+.shared-message a:hover {
+  color: var(--color-action-hover);
+}

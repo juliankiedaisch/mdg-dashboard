@@ -1,0 +1,483 @@
+/* ========================================
+   DASHBOARD – Page / Topic / App Management
+   ======================================== */
+
+/* ── Page content ─── */
+.dash-page-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+/* ── Topic section ─── */
+.dash-topic {
+  transition: box-shadow var(--transition-base);
+}
+
+.dash-topic[draggable="true"] {
+  cursor: grab;
+}
+
+.dash-topic[draggable="true"]:active {
+  cursor: grabbing;
+  opacity: 0.85;
+  box-shadow: var(--shadow-lg);
+}
+
+.dash-topic__header {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--space-md);
+  gap: var(--space-md);
+}
+
+.dash-topic__title {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.dash-topic__desc {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  flex: 1;
+}
+
+.dash-topic__edit-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  opacity: 0;
+  transition: opacity var(--transition-base), color var(--transition-base);
+}
+
+.dash-topic:hover .dash-topic__edit-btn {
+  opacity: 1;
+}
+
+.dash-topic__edit-btn:hover {
+  color: var(--color-primary);
+}
+
+/* ── Applications grid ─── */
+.dash-apps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: var(--space-md);
+}
+
+.dash-apps-grid__empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: var(--space-lg);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+/* ── Application card ─── */
+.dash-app-card {
+  background: var(--color-bg-section);
+  border-radius: var(--radius-lg);
+  padding: var(--space-sm);
+  text-align: center;
+  position: relative;
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.dash-app-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.dash-app-card[draggable="true"] {
+  cursor: grab;
+}
+
+.dash-app-card[draggable="true"]:active {
+  cursor: grabbing;
+  opacity: 0.7;
+}
+
+.dash-app-card__link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  text-decoration: none;
+  color: inherit;
+}
+
+.dash-app-card__icon {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  border-radius: var(--radius-md);
+}
+
+.dash-app-card__icon-placeholder {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary-light);
+  border-radius: var(--radius-md);
+  color: var(--color-primary);
+}
+
+.dash-app-card__name {
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  word-break: break-word;
+}
+
+.dash-app-card__desc {
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-secondary);
+  height: 3em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Admin action buttons on app card */
+.dash-app-card__actions {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+
+.dash-app-card:hover .dash-app-card__actions {
+  opacity: 1;
+}
+
+.dash-app-card__actions button {
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  transition: color var(--transition-base), background var(--transition-base);
+}
+
+.dash-app-card__actions button:hover {
+  color: var(--color-primary);
+  background: rgba(255, 255, 255, 1);
+}
+
+.dash-app-card__actions button:last-child:hover {
+  color: var(--color-danger);
+}
+
+/* ── Drag handle ─── */
+.dash-drag-handle {
+  display: flex;
+  align-items: center;
+  color: var(--color-text-muted);
+  cursor: grab;
+  flex-shrink: 0;
+}
+
+.dash-drag-handle:active {
+  cursor: grabbing;
+}
+
+.dash-drag-handle--app {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+}
+
+/* ── Add topic button ─── */
+.dash-add-topic-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  width: 100%;
+  padding: var(--space-md);
+  background: none;
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.dash-add-topic-btn:hover {
+  border-color: var(--color-action);
+  color: var(--color-action);
+  background: rgba(44, 156, 50, 0.04);
+}
+
+/* ── Empty state ─── */
+.dash-empty {
+  text-align: center;
+  padding: var(--space-2xl);
+  color: var(--color-text-secondary);
+}
+
+.dash-empty__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+/* ── Modal footer layout ─── */
+.dash-modal-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.dash-modal-footer__right {
+  display: flex;
+  gap: var(--space-sm);
+  margin-left: auto;
+}
+
+/* ══════════════════════════════════════════════════════
+   Topic Autocomplete  (.dash-tauto)
+   ══════════════════════════════════════════════════════ */
+.dash-tauto {
+  position: relative;
+}
+
+/* The suggestion dropdown */
+.dash-tauto__list {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  top: auto;
+  left: 0;
+  right: 0;
+  z-index: 1001;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  list-style: none;
+  margin: 0;
+  padding: 4px 0;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+/* Existing topic row */
+.dash-tauto__item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  transition: background var(--transition-base);
+}
+
+.dash-tauto__item:hover {
+  background: var(--color-bg-section);
+}
+
+.dash-tauto__page {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs, 0.75rem);
+  white-space: nowrap;
+}
+
+.dash-tauto__sep {
+  color: var(--color-border);
+  font-size: var(--font-size-xs, 0.75rem);
+}
+
+.dash-tauto__name {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
+  flex: 1;
+}
+
+/* "Create new Rubrik" row */
+.dash-tauto__create {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-action, var(--color-primary));
+  border-top: 1px solid var(--color-border-light);
+  transition: background var(--transition-base);
+}
+
+.dash-tauto__create:hover {
+  background: rgba(44, 156, 50, 0.06);
+}
+
+/* Page selector shown below input after "create new" is chosen */
+.dash-tauto__newpage {
+  margin-top: var(--space-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dash-tauto__newpage-label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+/* ══════════════════════════════════════════════════════
+   Icon Upload  (.dash-icon-upload)
+   ══════════════════════════════════════════════════════ */
+.dash-icon-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Clickable preview tile */
+.dash-icon-upload__preview {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-section);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: border-color var(--transition-base), background var(--transition-base);
+  padding: 0;
+}
+
+.dash-icon-upload__preview:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light, rgba(0,0,0,0.04));
+}
+
+.dash-icon-upload__preview--loading {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.dash-icon-upload__img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: calc(var(--radius-lg) - 2px);
+}
+
+.dash-icon-upload__placeholder {
+  color: var(--color-text-muted);
+}
+
+/* Text overlay on hover */
+.dash-icon-upload__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  font-size: var(--font-size-xs, 0.72rem);
+  font-weight: var(--font-weight-semibold);
+  border-radius: calc(var(--radius-lg) - 2px);
+  opacity: 0;
+  transition: opacity var(--transition-base);
+  pointer-events: none;
+}
+
+.dash-icon-upload__preview:hover:not(:disabled) .dash-icon-upload__overlay,
+.dash-icon-upload__preview--loading .dash-icon-upload__overlay {
+  opacity: 1;
+}
+
+/* Spinner ring inside overlay while uploading */
+.dash-icon-upload__spinner {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(255,255,255,0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: dash-spin 0.7s linear infinite;
+}
+
+@keyframes dash-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Filename + clear row */
+.dash-icon-upload__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.dash-icon-upload__hint {
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-muted);
+  word-break: break-all;
+  flex: 1;
+}
+
+.dash-icon-upload__clear {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-danger);
+  text-decoration: underline;
+  white-space: nowrap;
+}
+
+.dash-icon-upload__clear:hover {
+  opacity: 0.75;
+}
+
+.dash-icon-upload__error {
+  font-size: var(--font-size-sm);
+  color: var(--color-danger);
+  margin: 0;
+}
+
+/* ── Responsive ─── */
+@media (max-width: 768px) {
+  .dash-apps-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: var(--space-sm);
+  }
+
+  .dash-topic {
+    padding: var(--space-md);
+  }
+}
+
+@media (max-width: 480px) {
+  .dash-apps-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

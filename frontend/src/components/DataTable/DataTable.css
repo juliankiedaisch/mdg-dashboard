@@ -1,0 +1,74 @@
+/* ========================================
+   DataTable Component Styles
+   ======================================== */
+
+.shared-table-container {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  margin-bottom: var(--space-lg);
+}
+
+.shared-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.shared-table thead {
+  background-color: var(--color-table-head-bg);
+  color: var(--color-table-head-text);
+}
+
+.shared-table th {
+  padding: 15px;
+  text-align: left;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  user-select: none;
+}
+
+.shared-table__th--sortable {
+  cursor: pointer;
+}
+
+.shared-table__th--sortable:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.shared-table__sort-icon {
+  margin-left: 8px;
+  color: var(--color-text-light);
+  display: inline-block;
+  transition: color var(--transition-base);
+}
+
+.shared-table td {
+  padding: 15px;
+  border-bottom: 1px solid var(--color-table-border);
+}
+
+.shared-table tbody tr:hover {
+  background-color: var(--color-table-row-hover);
+}
+
+.shared-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.shared-table__empty {
+  text-align: center;
+  padding: var(--space-xl) !important;
+  color: var(--color-text-secondary);
+}
+
+/* Danger row variant */
+.shared-table tbody tr.row-danger {
+  background-color: var(--color-table-row-danger);
+}
+
+.shared-table tbody tr.row-danger:hover {
+  background-color: var(--color-table-row-danger-hover);
+}

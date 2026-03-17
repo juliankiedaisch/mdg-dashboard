@@ -1,0 +1,19 @@
+
+.csvgen-title {
+  font-size: 2rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+.csvgen-form-footer {
+  margin-top: auto;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Der direkte Form-Container muss Flexbox sein */
+form {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100% - 60px); /* Damit auto margin funktioniert */
+}

@@ -1,0 +1,92 @@
+/* ========================================
+   StatCard Component Styles
+   ======================================== */
+
+.shared-stat-card {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  border: solid 1px var(--color-border);
+  text-align: center;
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.shared-stat-card-normal {
+  padding: 25px;
+}
+
+.shared-stat-card-small {
+  padding: 15px;
+}
+
+.shared-stat-card-bg-page {
+  box-shadow: var(--shadow-md);
+}
+
+
+.shared-stat-card--hoverable:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.shared-stat-card--clickable {
+  cursor: pointer;
+}
+
+.shared-stat-card__value {
+  font-size: 2.5rem;
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--space-sm);
+  color: var(--color-text-primary);
+}
+
+.shared-stat-card__value--success {
+  color: var(--color-success);
+}
+
+.shared-stat-card__value--danger {
+  color: var(--color-danger);
+}
+
+.shared-stat-card__value--info {
+  color: var(--color-info);
+}
+
+.shared-stat-card__value--warning {
+  color: var(--color-warning);
+}
+
+.shared-stat-card__label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ========================================
+   Responsive – Mobile (≤ 768px)
+   ======================================== */
+@media (max-width: 768px) {
+  .shared-stat-card {
+    padding: var(--space-md, 16px);
+  }
+
+  .shared-stat-card__value {
+    font-size: 1.75rem;
+  }
+
+  .shared-stat-card__label {
+    font-size: var(--font-size-xs, 0.75rem);
+    letter-spacing: 0.3px;
+  }
+}
+
+/* ─ Extra small (≤ 480px) ─ */
+@media (max-width: 480px) {
+  .shared-stat-card {
+    padding: var(--space-sm, 12px);
+  }
+
+  .shared-stat-card__value {
+    font-size: 1.4rem;
+  }
+}

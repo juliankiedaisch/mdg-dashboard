@@ -1,0 +1,183 @@
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import api from '../../utils/api';
+import { PageContainer, Card, Button, FormGroup, TextInput, TextArea, SelectInput } from '../../components/shared';
+import './Surveys.css';
+
+/**
+ * Phase 0: Create a special survey.
+ * Upload student CSV, parent CSV, set grade level and title.
+ */
+const NewSpecialSurvey = () => {
+  const navigate = useNavigate();
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [gradeLevel, setGradeLevel] = useState('');
+  const [studentFile, setStudentFile] = useState(null);
+  const [parentFile, setParentFile] = useState(null);
+  const [teacherSurveyId, setTeacherSurveyId] = useState('');
+  const [templates, setTemplates] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    loadTemplates();
+  }, []);
+
+  const loadTemplates = async () => {
+    try {
+      const res = await api.get('/api/surveys?tab=templates&template_type=teacher_evaluation');
+      setTemplates(res.data.surveys || []);
+    } catch (err) {
+      console.error('Error loading templates:', err);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!title.trim()) { setError('Bitte einen Titel eingeben.'); return; }
+    if (!gradeLevel.trim()) { setError('Bitte einen Jahrgang angeben.'); return; }
+    if (!studentFile) { setError('Bitte eine Schüler-CSV-Datei hochladen.'); return; }
+    if (!parentFile) { setError('Bitte eine Eltern-CSV-Datei hochladen.'); return; }
+
+    setLoading(true);
+    setError('');
+
+    try {
+      const formData = new FormData();
+      formData.append('title', title.trim());
+      formData.append('description', description.trim());
+      formData.append('grade_level', gradeLevel.trim());
+      formData.append('student_csv', studentFile);
+      formData.append('parent_csv', parentFile);
+      if (teacherSurveyId) {
+        formData.append('teacher_survey_id', teacherSurveyId);
+      }
+
+      const res = await api.post('/api/surveys/special', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      if (res.data.status) {
+        navigate(`/surveys/special/${res.data.survey_id}`);
+      } else {
+        setError(res.data.message);
+      }
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Fehler beim Erstellen.';
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <PageContainer>
+      <Card variant="header" title="Neue Spezialumfrage erstellen">
+        <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
+          <Button variant="secondary" onClick={() => navigate('/surveys/new')}>← Zurück</Button>
+          <Button variant="primary" onClick={handleSubmit} loading={loading}>Spezialumfrage erstellen</Button>
+        </div>
+      </Card>
+
+      {error && <div style={{ color: '#ef4444', marginBottom: '12px' }}>{error}</div>}
+
+      <Card style={{ marginBottom: 'var(--space-lg)' }}>
+        <h3 style={{ marginBottom: 'var(--space-md)' }}>Allgemeine Informationen</h3>
+
+        <TextInput
+          id="ss-title"
+          label="Titel"
+          required
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="z.B. Klassenzusammensetzung 2026/27"
+          fullWidth
+        />
+
+        <TextArea
+          id="ss-desc"
+          label="Beschreibung"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Optionale Beschreibung"
+          rows={3}
+          fullWidth
+        />
+
+        <TextInput
+          id="ss-grade"
+          label="Jahrgang / Stufe"
+          required
+          value={gradeLevel}
+          onChange={(e) => setGradeLevel(e.target.value)}
+          placeholder="z.B. 5, 6a, Jahrgang 7"
+          fullWidth
+        />
+      </Card>
+
+      <Card style={{ marginBottom: 'var(--space-lg)' }}>
+        <h3 style={{ marginBottom: 'var(--space-md)' }}>CSV-Dateien hochladen</h3>
+        <p style={{ color: 'var(--color-text-secondary)', marginBottom: 'var(--space-md)', fontSize: 'var(--font-size-sm)' }}>
+          Beide CSV-Dateien müssen im Semikolon-getrennten Format vorliegen.
+          Erforderliche Spalten: <code>Account</code>, <code>Vorname</code>, <code>Nachname</code>.
+          Für Schüler zusätzlich: <code>Klasse/Information</code>.
+        </p>
+
+        <FormGroup label="Schüler-CSV" htmlFor="ss-student-csv" required>
+          <input
+            id="ss-student-csv"
+            type="file"
+            accept=".csv,.txt"
+            className="shared-input"
+            onChange={(e) => setStudentFile(e.target.files[0])}
+          />
+          {studentFile && (
+            <span style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>
+              {studentFile.name}
+            </span>
+          )}
+        </FormGroup>
+
+        <FormGroup label="Eltern-CSV" htmlFor="ss-parent-csv" required>
+          <input
+            id="ss-parent-csv"
+            type="file"
+            accept=".csv,.txt"
+            className="shared-input"
+            onChange={(e) => setParentFile(e.target.files[0])}
+          />
+          {parentFile && (
+            <span style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>
+              {parentFile.name}
+            </span>
+          )}
+        </FormGroup>
+      </Card>
+
+      <Card style={{ marginBottom: 'var(--space-lg)' }}>
+        <h3 style={{ marginBottom: 'var(--space-md)' }}>Lehrer-Bewertungsvorlage (optional)</h3>
+        <p style={{ color: 'var(--color-text-secondary)', marginBottom: 'var(--space-md)', fontSize: 'var(--font-size-sm)' }}>
+          Wählen Sie eine Bewertungsvorlage für die Lehrerbewertung in Phase 3.
+          Die Fragen dieser Vorlage werden den Lehrkräften angezeigt.
+          Sie können auch eine <a href="/surveys/new/evaluation-template" style={{ color: 'var(--color-primary)' }}>neue Bewertungsvorlage erstellen</a>.
+        </p>
+
+        <FormGroup label="Vorlage auswählen" htmlFor="ss-template">
+          <SelectInput
+            id="ss-template"
+            value={teacherSurveyId}
+            onChange={(e) => setTeacherSurveyId(e.target.value)}
+            fullWidth
+          >
+            <option value="">Keine zusätzliche Vorlage</option>
+            {templates.map((t) => (
+              <option key={t.id} value={t.id}>{t.title}</option>
+            ))}
+          </SelectInput>
+        </FormGroup>
+      </Card>
+    </PageContainer>
+  );
+};
+
+export default NewSpecialSurvey;

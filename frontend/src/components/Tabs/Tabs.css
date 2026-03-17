@@ -1,0 +1,249 @@
+/* ========================================
+   Tabs Component Styles
+   ======================================== */
+
+.tabs {
+  margin-bottom: var(--space-sm);
+  position: relative;
+}
+
+/* ── Tab list (the row of tabs) ── */
+.tabs__list {
+  display: flex;
+  padding: 0;
+  gap: var(--space-sm);
+}
+
+/* ── Hamburger button – hidden on desktop ── */
+.tabs__hamburger {
+  display: none;
+}
+
+/* ── Individual tab ── */
+.tabs__tab {
+  display: flex;
+  align-items: center;
+  padding: var(--space-sm) var(--space-lg);
+  cursor: pointer;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  background: var(--color-bg-section);
+  border-radius: var(--radius-sm);
+  border: none;
+  margin-bottom: var(--space-sm);
+  white-space: nowrap;
+  user-select: none;
+  position: relative;
+  transition: color var(--transition-base), border-color var(--transition-base),
+    transform var(--transition-base), box-shadow var(--transition-base);
+  outline-offset: -2px;
+}
+
+.tabs__tab:hover {
+  color: var(--color-sidebar-text);
+  background-color: var(--color-sidebar-hover);
+}
+
+.tabs__tab:focus-visible {
+  outline: 2px solid var(--color-primary);
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+}
+
+/* Active tab */
+.tabs__tab--active {
+  color: var(--color-sidebar-text);
+  background-color: var(--color-sidebar-active);
+}
+
+/* Stretch variant: equal-width tabs */
+.tabs__tab--stretch {
+  flex: 1;
+  justify-content: center;
+}
+
+/* ── Drag state ── */
+.tabs__tab[draggable="true"] {
+  cursor: grab;
+}
+
+.tabs__tab[draggable="true"]:active {
+  cursor: grabbing;
+  opacity: 0.7;
+}
+
+/* ── Drag handle ── */
+.tabs__drag-handle {
+  display: flex;
+  align-items: center;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+/* ── Label ── */
+.tabs__label {
+  pointer-events: none;
+}
+
+/* ── Edit button ── */
+.tabs__edit-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  padding: 2px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  transition: opacity var(--transition-base), color var(--transition-base);
+  flex-shrink: 0;
+}
+
+.tabs__tab:hover .tabs__edit-btn {
+  opacity: 1;
+}
+
+/* ── Add-tab button ── */
+.tabs__add-btn {
+  margin-bottom: var(--space-sm);
+}
+
+/* ========================================
+   Sticky Header Variant  (sticky=true)
+   Mirrors Card variant="header" so both
+   sticky layers share the same visual logic.
+   ======================================== */
+
+/*
+ * Outer wrapper – sticky, sits directly below the Card header.
+ * --page-header-height is set dynamically by Card via ResizeObserver;
+ * the fallback of 6.5rem matches the default Card header dimensions.
+ */
+.tabs--sticky {
+  position: sticky;
+  /*
+   * Pull the tabs up by --space-sm so their solid background overlaps
+   * and fully covers the transparent bottom of the Card header spacer.
+   * Without this, the gradient end of the spacer is transparent and
+   * scrolled page content bleeds through that gap.
+   */
+  top: calc(var(--page-header-height, 6.5rem) - var(--space-sm));
+  z-index: 99; /* one level below the Card header (z-index: 100) */
+  margin-bottom: 0;
+}
+
+/*
+ * The solid background strip that masks scrolling content underneath.
+ * overflow: hidden clips any lateral box-shadow bleed from tab items.
+ * On mobile the overflow is reset so the absolute dropdown can escape.
+ */
+.tabs__sticky-content {
+  background-color: rgb(var(--color-bg-page));
+  padding: var(--space-sm) 0;
+  overflow: hidden; /* clips horizontal shadow bleed from tab items */
+}
+
+/*
+ * Gradient spacer – identical behaviour to .shared-card-header-spacer.
+ * Fades the solid bg-page strip into transparent so content slides
+ * seamlessly underneath the sticky layer.
+ */
+.tabs-sticky-spacer {
+  height: var(--space-sm);
+  min-height: var(--space-sm);
+  background: linear-gradient(to bottom, rgb(var(--color-bg-page)), transparent);
+  pointer-events: none;
+}
+
+/* ========================================
+   Responsive – Mobile (≤ 768px)
+   ======================================== */
+@media (max-width: 768px) {
+  /* Show hamburger, hide default list */
+  .tabs__hamburger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-bg-section);
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-sm, 4px);
+  }
+
+  .tabs__hamburger:hover {
+    background-color: var(--color-sidebar-hover);
+    color: var(--color-sidebar-text);
+  }
+
+  .tabs__hamburger-label {
+    flex: 1;
+    text-align: left;
+  }
+
+  .tabs__hamburger-icon {
+    display: flex;
+    align-items: center;
+    transition: transform var(--transition-base);
+  }
+
+  .tabs__hamburger-icon--open {
+    transform: rotate(90deg);
+  }
+
+  /* Allow the absolute dropdown to escape sticky-content's overflow clipping */
+  .tabs--sticky .tabs__sticky-content {
+    overflow: visible;
+  }
+
+  /* Hide the tab list unless the menu is open */
+  .tabs__list {
+    display: none;
+    flex-direction: column;
+    gap: 0;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    position: absolute;
+    left: 0;
+    right: 0;
+    z-index: 200;
+  }
+
+  .tabs__list--open {
+    display: flex;
+  }
+
+  /* Mobile tab items */
+  .tabs__tab {
+    width: 100%;
+    border-radius: 0;
+    margin-bottom: 0;
+    white-space: normal;
+    padding: var(--space-md) var(--space-lg);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .tabs__tab:last-child {
+    border-bottom: none;
+  }
+
+  .tabs__tab--stretch {
+    flex: unset;
+    justify-content: flex-start;
+  }
+
+  /* Add-tab button on mobile */
+  .tabs__add-btn {
+    width: 100%;
+    border-radius: 0;
+    margin-bottom: 0;
+  }
+}

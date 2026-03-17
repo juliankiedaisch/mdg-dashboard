@@ -1,0 +1,65 @@
+/* ========================================
+   SearchInput Component Styles
+   ======================================== */
+
+.shared-search {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.shared-search--full {
+  width: 100%;
+}
+
+.shared-search__icon {
+  position: absolute;
+  left: 12px;
+  color: var(--color-text-secondary);
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+.shared-search__input {
+  display: block;
+  width: 100%;
+  padding: 10px 12px 10px 36px;
+  font-size: var(--font-size-base);
+  border: 2px solid var(--color-border-input);
+  border-radius: var(--radius-md);
+  background-color: var(--color-bg-input);
+  transition: border-color var(--transition-slow);
+  font-family: var(--font-family);
+  box-sizing: border-box;
+}
+
+.shared-search__input:focus {
+  outline: none;
+  border-color: var(--color-border-input-focus);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+}
+
+.shared-search__input:disabled {
+  background-color: var(--color-bg-input-disabled);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Search input sizes */
+.shared-search--sm .shared-search__input {
+  padding: 6px 10px 6px 32px;
+  font-size: var(--font-size-sm);
+}
+
+.shared-search--sm .shared-search__icon {
+  left: 10px;
+}
+
+.shared-search--lg .shared-search__input {
+  padding: 14px 16px 14px 42px;
+  font-size: var(--font-size-lg);
+}
+
+.shared-search--lg .shared-search__icon {
+  left: 14px;
+}

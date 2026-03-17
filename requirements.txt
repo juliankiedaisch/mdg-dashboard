@@ -1,0 +1,16 @@
+Flask
+flask_sqlalchemy
+Authlib
+SQLAlchemy 
+flask-socketio
+Flask-Session
+requests
+dotenv
+pandas
+pathlib
+apscheduler
+urllib3
+gevent
+gevent-websocket
+gunicorn 
+eventlet

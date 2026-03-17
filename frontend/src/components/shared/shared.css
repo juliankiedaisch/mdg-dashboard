@@ -1,0 +1,198 @@
+/* ========================================
+   SHARED STYLES
+   Reusable styles used by multiple components.
+   Only styles referenced by more than one component belong here.
+   ======================================== */
+
+/* ----------------------------------------
+   FormGroup  (used by FormGroup, TextInput, TextArea, SelectInput)
+   ---------------------------------------- */
+.shared-form-group {
+  margin-bottom: var(--space-lg);
+}
+
+.shared-form-group__label {
+  display: block;
+  margin-bottom: var(--space-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-base);
+}
+
+.shared-form-group__required {
+  color: var(--color-danger);
+}
+
+.shared-form-group__hint {
+  display: block;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-sm);
+  font-style: italic;
+}
+
+/* ----------------------------------------
+   Input base  (used by TextInput, TextArea, SelectInput)
+   ---------------------------------------- */
+.shared-input {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  font-size: var(--font-size-base);
+  border: 2px solid var(--color-border-input);
+  border-radius: var(--radius-md);
+  background-color: var(--color-bg-input);
+  transition: border-color var(--transition-slow);
+  font-family: var(--font-family);
+  box-sizing: border-box;
+}
+
+.shared-input:focus {
+  outline: none;
+  border-color: var(--color-border-input-focus);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+}
+
+.shared-input:disabled {
+  background-color: var(--color-bg-input-disabled);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+select.shared-input {
+  appearance: auto;
+}
+
+/* Input sizes */
+.shared-input--sm {
+  padding: 6px 10px;
+  font-size: var(--font-size-sm);
+}
+
+.shared-input--md {
+  padding: 10px 12px;
+  font-size: var(--font-size-base);
+}
+
+.shared-input--lg {
+  padding: 14px 16px;
+  font-size: var(--font-size-lg);
+}
+
+/* Input modifiers */
+.shared-input--full {
+  width: 100%;
+}
+
+.shared-input--error {
+  border-color: var(--color-danger);
+}
+
+.shared-input--error:focus {
+  border-color: var(--color-danger);
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.15);
+}
+
+.shared-input--textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.shared-input--select {
+  appearance: auto;
+  cursor: pointer;
+}
+
+/* Input helper / error messages */
+.shared-input__error {
+  display: block;
+  font-size: var(--font-size-sm);
+  color: var(--color-danger);
+  margin-top: var(--space-xs, 4px);
+}
+
+.shared-input__helper {
+  display: block;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-top: var(--space-xs, 4px);
+}
+
+/* ----------------------------------------
+   FormGroup input type styling
+   (shared across FormGroup, TextInput, TextArea, SelectInput)
+   ---------------------------------------- */
+.shared-form-group input[type="text"],
+.shared-form-group input[type="email"],
+.shared-form-group input[type="password"],
+.shared-form-group input[type="url"],
+.shared-form-group input[type="number"],
+.shared-form-group input[type="date"],
+.shared-form-group input[type="time"],
+.shared-form-group textarea,
+.shared-form-group select {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  font-size: var(--font-size-base);
+  border: 2px solid var(--color-border-input);
+  border-radius: var(--radius-md);
+  background-color: var(--color-bg-input);
+  transition: border-color var(--transition-slow);
+  font-family: var(--font-family);
+}
+
+.shared-form-group input:focus,
+.shared-form-group textarea:focus,
+.shared-form-group select:focus {
+  outline: none;
+  border-color: var(--color-border-input-focus);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+}
+
+.shared-form-group input:disabled,
+.shared-form-group textarea:disabled,
+.shared-form-group select:disabled {
+  background-color: var(--color-bg-input-disabled);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.shared-form-group input[type="file"] {
+  display: block;
+  width: 100%;
+  padding: 12px 15px;
+  font-size: var(--font-size-base);
+  border: 2px solid var(--color-border-input);
+  border-radius: var(--radius-md);
+  background-color: var(--color-bg-input);
+  cursor: pointer;
+  transition: border-color var(--transition-slow);
+}
+
+.shared-form-group input[type="file"]:hover:not(:disabled) {
+  border-color: var(--color-action);
+}
+
+/* ----------------------------------------
+   Animations  (used by Button, Modal, MessageBox, Spinner)
+   ---------------------------------------- */
+@keyframes shared-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes shared-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes shared-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

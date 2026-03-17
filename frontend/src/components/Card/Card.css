@@ -1,0 +1,104 @@
+/* ========================================
+   Card Component Styles
+   ======================================== */
+
+.shared-card {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-md);
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+  height: 100%;
+}
+
+.shared-card--section {
+  background: var(--color-bg-section);
+  box-shadow: none;
+  border: none;
+}
+
+.shared-card--header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border: 0;
+  background: none;
+  padding: 0px;
+  margin-bottom: 0px;
+  border-radius: 0;
+}
+
+.shared-card__header_content {
+  top: 0;
+  display: flex;
+  align-items: center;
+  background-color: rgb(var(--color-bg-page));
+  justify-content: space-between;
+  background-color: rgb(var(--color-bg-page));
+  padding: var(--space-lg) 0 var(--space-lg) 0;
+  /* Clip lateral box-shadow bleed from child elements (buttons, etc.) */
+  overflow: hidden;
+}
+
+.shared-card-header-spacer {
+  height: var(--space-sm);
+  min-height: var(--space-sm);
+  background: linear-gradient(to bottom, rgb(var(--color-bg-page)), transparent);
+  border-radius: 0; /* keine Abrundung, nur unten */
+  pointer-events: none;
+}
+
+.shared-card__title-header {
+  font-size: var(--font-size-3xl);
+  margin-bottom: 0;
+  color: var(--color-text-header);
+}
+
+.shared-card__header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.shared-card--hoverable:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.shared-card--clickable {
+  cursor: pointer;
+}
+
+.shared-card__title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-lg);
+}
+
+/* ========================================
+   Responsive – Mobile (≤ 768px)
+   ======================================== */
+@media (max-width: 768px) {
+  .shared-card__header_content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    padding: var(--space-md) 0 var(--space-md) 0;
+  }
+
+  .shared-card__title-header {
+    font-size: var(--font-size-2xl);
+  }
+
+  .shared-card__header-actions {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+  }
+
+  .shared-card__header-actions > * {
+    min-height: 44px; /* comfortable touch target */
+  }
+}

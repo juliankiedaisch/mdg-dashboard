@@ -1,0 +1,163 @@
+/* Chat History Sidebar */
+
+.chat-history-sidebar {
+  width: 260px;
+  min-width: 260px;
+  background-color: var(--color-bg-section, #f9fafb);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-right: solid 1px var(--color-border, #e5e7eb);
+  height: 100%;
+}
+
+.chat-history-sidebar__header {
+  padding: var(--space-sm, 10px) var(--space-sm, 10px) var(--space-xs, 6px);
+}
+
+.chat-history-sidebar__new-chat-btn {
+  width: 100%;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+}
+
+.chat-history-sidebar__new-chat-icon {
+  font-size: var(--font-size-base, 14px);;
+}
+
+.chat-history-sidebar__list {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-xs, 6px) var(--space-xs, 6px) var(--space-sm, 10px);
+}
+
+.chat-history-sidebar__empty {
+  color: var(--color-text-muted, #9ca3af);
+  font-size: var(--font-size-md, 13px);
+  text-align: center;
+  padding: var(--space-lg, 20px) 0;
+}
+
+/* Session item — card style */
+.chat-history-sidebar__item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 10px;
+  border-radius: var(--radius-md, 6px);
+  cursor: pointer;
+  margin-bottom: 3px;
+  border: 1px solid transparent;
+  transition: background-color 0.15s, border-color 0.15s;
+  position: relative;
+}
+
+.chat-history-sidebar__item:hover:not(.chat-history-sidebar__item--active) {
+  background-color: var(--color-primary-light, #f3f4f6);
+  border-color: var(--color-border-light, #e9ebee);
+}
+
+.chat-history-sidebar__item--active {
+  background-color: var(--color-primary-light, #dbeafe);
+  border-color: var(--color-primary-border, #93c5fd);
+}
+
+/* Item body takes remaining width */
+.chat-history-sidebar__item-body {
+  flex: 1;
+  overflow: hidden;
+}
+
+.chat-history-sidebar__item-title {
+  font-size: var(--font-size-md, 13px);
+  font-weight: 500;
+  color: var(--color-text-primary, #1f2937);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-history-sidebar__item-date {
+  font-size: var(--font-size-xs, 14px);
+  color: var(--color-text-muted, #9ca3af);
+  margin-top: 2px;
+}
+
+/* Three-dot menu */
+.chat-history-sidebar__menu-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.chat-history-sidebar__menu-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-secondary, #6b7280);
+  font-size: var(--font-size-base, 14px);
+  line-height: 1;
+  padding: 2px 5px;
+  border-radius: var(--radius-sm, 4px);
+  opacity: 0;
+  transition: opacity 0.15s, background-color 0.15s;
+}
+
+.chat-history-sidebar__item:hover .chat-history-sidebar__menu-btn,
+.chat-history-sidebar__item--active .chat-history-sidebar__menu-btn {
+  opacity: 1;
+}
+
+.chat-history-sidebar__menu-btn:hover {
+  background-color: var(--color-primary-light, #e9ebee);
+}
+
+/* Dropdown */
+.chat-history-sidebar__dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% - 50px);
+  background: var(--color-bg-card, #fff);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: var(--radius-md, 6px);
+  box-shadow: var(--shadow-md, 0 2px 8px rgba(0, 0, 0, 0.12));
+  min-width: 148px;
+  z-index: 100;
+  overflow: hidden;
+}
+
+.chat-history-sidebar__dropdown-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 8px 12px;
+  font-size: var(--font-size-sm, 13px);
+  color: var(--color-text-primary, #1f2937);
+  cursor: pointer;
+  transition: background-color 0.12s;
+}
+
+.chat-history-sidebar__dropdown-item:hover {
+  background-color: var(--color-bg-page, #f3f4f6);
+}
+
+.chat-history-sidebar__dropdown-item--danger {
+  color: var(--color-danger, #e74c3c);
+}
+
+.chat-history-sidebar__dropdown-item--danger:hover {
+  background-color: var(--color-danger-bg, #f8d7da);
+}
+
+/* Rename input */
+.chat-history-sidebar__edit-input {
+  width: 100%;
+  padding: 3px 6px;
+  border: 1px solid var(--color-primary-border, #93c5fd);
+  border-radius: var(--radius-sm, 4px);
+  font-size: var(--font-size-sm, 13px);
+  outline: none;
+}

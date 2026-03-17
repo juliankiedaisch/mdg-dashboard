@@ -1,0 +1,175 @@
+/* Message Bubble */
+
+.message-bubble {
+  display: flex;
+  margin-bottom: var(--space-sm, 10px);
+  padding: 0 var(--space-sm, 8px);
+}
+
+.message-bubble--user {
+  justify-content: flex-end;
+}
+
+.message-bubble--assistant {
+  justify-content: flex-start;
+}
+
+.message-bubble__content {
+  max-width: 78%;
+  border-radius: var(--radius-xl, 12px);
+  padding: 10px 14px;
+  box-shadow: var(--shadow-sm);
+}
+
+.message-bubble__content--user {
+  background-color: rgba(var(--color-bg-page), 1);
+  color: var(--color-text-primary, #1f2937);
+  border-bottom-right-radius: var(--radius-sm, 4px);
+}
+
+.message-bubble__content--assistant {
+  background-color: rgba(var(--color-bg-page), 0.3);
+  color: var(--color-text-primary, #1f2937);
+  border-bottom-left-radius: var(--radius-sm, 4px);
+}
+
+.message-bubble__text {
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: var(--font-size-md, 14px);
+  line-height: 1.6;
+}
+
+/* When rendering parsed markdown, block elements manage their own spacing */
+.message-bubble__text--markdown {
+  white-space: normal;
+}
+
+/* Paragraph blocks */
+.message-bubble__paragraph {
+  margin: 0 0 0.45em;
+  line-height: 1.65;
+}
+.message-bubble__paragraph:last-child {
+  margin-bottom: 0;
+}
+
+/* Bullet list */
+.message-bubble__list {
+  margin: 0.25em 0 0.5em 1.1em;
+  padding: 0;
+  list-style: disc;
+}
+.message-bubble__list:last-child {
+  margin-bottom: 0;
+}
+.message-bubble__list-item {
+  margin-bottom: 0.35em;
+  line-height: 1.65;
+}
+.message-bubble__list-item:last-child {
+  margin-bottom: 0;
+}
+
+/* Inline source citation [Quelle: ...] */
+.message-bubble__inline-source {
+  display: inline;
+  font-size: var(--font-size-sm, 0.8rem);
+  color: var(--color-primary, #6b7280);
+  margin-left: 0.3em;
+  opacity: 0.85;
+  white-space: nowrap;
+}
+
+/* Blinking cursor during streaming */
+.message-bubble__cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: currentColor;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: blink 0.9s step-start infinite;
+}
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+/* Sources */
+.message-bubble__sources {
+  margin-top: var(--space-sm, 8px);
+  padding-top: var(--space-sm, 8px);
+  border-top: 1px solid var(--color-border-light, #e5e7eb);
+}
+
+.message-bubble__sources-label {
+  font-size: var(--font-size-xs, 11px);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-xs, 4px);
+  color: var(--color-text-secondary, #6b7280);
+}
+
+.message-bubble__source-item {
+  margin-bottom: 4px;
+}
+
+.message-bubble__source-link,
+.message-bubble__source-text {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  font-size: var(--font-size-sm, 12px);
+  line-height: 1.4;
+  min-height: 24px;
+}
+
+.message-bubble__source-link {
+  color: var(--color-primary, #3b82f6);
+  text-decoration: none;
+  border-radius: var(--radius-sm, 4px);
+  padding: 2px 4px;
+  margin: -2px -4px;
+  transition: background-color 0.15s;
+}
+
+.message-bubble__source-link:hover {
+  background-color: var(--color-primary-light, rgba(52, 152, 219, 0.1));
+}
+
+.message-bubble__source-icon {
+  flex-shrink: 0;
+  font-size: var(--font-size-sm, 12px);
+}
+
+.message-bubble__source-label {
+  color: inherit;
+}
+
+.message-bubble__source-text .message-bubble__source-label {
+  color: var(--color-text-secondary, #6b7280);
+}
+
+/* Footer */
+.message-bubble__footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 5px;
+}
+
+.message-bubble__time {
+  font-size: var(--font-size-xs, 14px);;
+  opacity: 0.55;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .message-bubble__content {
+    max-width: 92%;
+  }
+
+  .message-bubble__text {
+    font-size: var(--font-size-base, 15px);
+  }
+}

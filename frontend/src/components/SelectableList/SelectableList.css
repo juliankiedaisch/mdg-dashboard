@@ -1,0 +1,104 @@
+/* ========================================
+   SelectableList Component Styles
+   ======================================== */
+
+.shared-selectable-list {
+  list-style: none;
+  margin: 0;
+  padding: var(--space-xs) 0;
+  overflow-y: auto;
+  background: var(--color-bg-card);
+}
+
+.shared-selectable-list__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  cursor: pointer;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  border-left: 3px solid transparent;
+  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+  user-select: none;
+}
+
+/* Size variants */
+.shared-selectable-list--sm .shared-selectable-list__item {
+  font-size: var(--font-size-sm);
+  padding: var(--space-sm) var(--space-md);
+}
+
+.shared-selectable-list--md .shared-selectable-list__item {
+  font-size: var(--font-size-base);
+  padding: 0.625rem var(--space-md);
+}
+
+.shared-selectable-list--lg .shared-selectable-list__item {
+  font-size: var(--font-size-lg);
+  padding: 0.75rem var(--space-md);
+}
+
+.shared-selectable-list__item:hover {
+  background: var(--color-primary-light);
+}
+
+.shared-selectable-list__item:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+}
+
+.shared-selectable-list__item.is-active {
+  background: var(--color-primary-light);
+  border-left-color: var(--color-primary);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* State indicators */
+.shared-selectable-list__item.is-partial:not(.is-active) {
+  border-left-color: var(--color-warning);
+}
+
+.shared-selectable-list__item.is-full:not(.is-active) {
+  border-left-color: var(--color-success);
+}
+
+.shared-selectable-list__label {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-transform: capitalize;
+}
+
+.shared-selectable-list__badge {
+  flex-shrink: 0;
+  padding: 0.0625rem var(--space-sm);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  background: var(--color-border);
+  color: var(--color-text-secondary);
+  transition: background var(--transition-fast), color var(--transition-fast);
+  min-width: 2rem;
+  text-align: center;
+}
+
+.shared-selectable-list__item.is-partial .shared-selectable-list__badge {
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
+}
+
+.shared-selectable-list__item.is-full .shared-selectable-list__badge {
+  background: var(--color-success-bg);
+  color: var(--color-success-text);
+}
+
+.shared-selectable-list__empty {
+  color: var(--color-text-secondary);
+  text-align: center;
+  padding: var(--space-lg) var(--space-md);
+  font-style: italic;
+  font-size: var(--font-size-sm);
+}

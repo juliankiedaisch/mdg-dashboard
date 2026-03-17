@@ -1,0 +1,15 @@
+-- migrations/001_initial.sql
+-- ──────────────────────────────────────────────────────────
+-- Placeholder: initial schema is created by SQLAlchemy's
+-- db.create_all().  Future schema changes go into numbered
+-- .sql files in this directory and are executed automatically
+-- on startup.
+--
+-- Naming convention:  NNN_short_description.sql
+--   e.g.  002_add_feedback_column.sql
+--
+-- Each file runs inside a single transaction.
+-- The runner tracks which files have already been applied
+-- via the _schema_migrations table.
+-- ──────────────────────────────────────────────────────────
+SELECT 1;  -- no-op

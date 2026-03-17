@@ -1,0 +1,196 @@
+/* ========================================
+   GLOBAL DESIGN SYSTEM - CSS VARIABLES
+   ======================================== */
+
+:root {
+  /* --- Primary Colors --- */
+  --color-primary: #1a5984;
+  --color-primary-hover: #2980b9;
+  --color-primary-light: rgba(52, 152, 219, 0.15);
+  --color-primary-border: rgba(52, 152, 219, 0.4);
+
+
+
+  /* --- Accent / Action Colors --- */
+  --color-action: #2c9c32;
+  --color-action-hover: rgb(56, 180, 75);
+  --color-action-shadow: rgb(146, 181, 153);
+
+
+    /* --- Accent / Action Colors --- */
+  --color-selection: #2c9c32a2;
+  --color-selection-hover: rgba(56, 180, 75, 0.666);
+  --color-selection-shadow: rgb(146, 181, 153);
+
+
+  /* --- Semantic Colors --- */
+  --color-success: #27ae60;
+  --color-success-hover: #219a52;
+  --color-success-bg: #d4edda;
+  --color-success-text: #155724;
+  --color-success-border: #c3e6cb;
+
+  --color-danger: #e74c3c;
+  --color-danger-hover: #c0392b;
+  --color-danger-bg: #f8d7da;
+  --color-danger-text: #721c24;
+  --color-danger-border: #f5c6cb;
+
+  --color-warning: #f39c12;
+  --color-warning-hover: #d68910;
+  --color-warning-bg: #fff3cd;
+  --color-warning-text: #856404;
+  --color-warning-border: #ffeeba;
+
+  --color-info: #3498db;
+  --color-info-bg: #e7f3ff;
+  --color-info-border: #b3d7ff;
+
+  /* --- Neutral / Text Colors --- */
+  --color-text-primary: #29425b;
+  --color-text-secondary: #7f8c8d;
+  --color-text-muted: #95a5a6;
+  --color-text-light: #bdc3c7;
+  --color-text-on-dark: #ffffff;
+  --color-text-header: #274d67;
+
+  /* --- Background Colors --- */
+  --color-bg-page: 231, 231, 231;
+  --color-bg-body: #ffffff;
+  --color-bg-card: #ffffff;
+  --color-bg-section: #ffffff;
+  --color-bg-input: #ffffff;
+  --color-bg-input-disabled: #f8f9fa;
+
+  /* --- Sidebar Colors --- */
+  --color-sidebar-bg: #ffffff;
+  --color-sidebar-text: #353535;
+  --color-sidebar-muted: #ffffff;
+  --color-sidebar-hover: rgba(83, 140, 190, 0.2);
+  --color-sidebar-active: rgba(83, 140, 190, 0.554);
+  --color-sidebar-active-border: var(--color-primary);
+  --color-sidebar-divider: rgba(159, 159, 159, 0.1);
+  --color-sidebar-sub-menu-bg: rgb(255, 255, 255);
+  --color-sidebar-sub-menu-text: #415566;
+
+  /* --- Table Colors --- */
+  --color-table-head-bg: #34495e;
+  --color-table-head-text: #ffffff;
+  --color-table-row-hover: var(--color-bg-section);
+  --color-table-border: #ecf0f1;
+  --color-table-row-danger: #ffe6e6;
+  --color-table-row-danger-hover: #ffd4d4;
+
+  /* --- Border Colors --- */
+  --color-border: #dee2e6;
+  --color-border-light: #ecf0f1;
+  --color-border-input: #dce4ec;
+  --color-border-input-focus: var(--color-action);
+
+  /* --- Shadows --- */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.15);
+  --shadow-xl: 0 8px 24px rgba(0, 0, 0, 0.2);
+  --shadow-card-hover: 0 6px 16px rgba(0, 0, 0, 0.15);
+
+  /* --- Border Radius --- */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-full: 9999px;
+
+  /* --- Spacing --- */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+
+  /* --- Typography --- */
+  --font-family: "Inter", system-ui, sans-serif;
+  --font-family-mono: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 0.95rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.1rem;
+  --font-size-xl: 1.3rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 2rem;
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* --- Transitions --- */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.2s ease;
+  --transition-slow: 0.3s ease;
+
+  /* --- Z-indexes --- */
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-modal: 1000;
+  --z-tooltip: 1100;
+}
+
+/* ========================================
+   GLOBAL RESET & BASE STYLES
+   ======================================== */
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/Inter/InterVariable.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Inter";
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/Inter/InterVariable-Italic.woff2") format("woff2");
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--color-bg-body);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+  font-optical-sizing: auto;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+code {
+  font-family: var(--font-family-mono);
+}
+
+/* ========================================
+   GLOBAL UTILITY CLASSES
+   ======================================== */
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: var(--font-size-2xl);
+  color: var(--color-text-primary);
+}
