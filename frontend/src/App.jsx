@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { useState, useEffect } from 'react';
 import api from './utils/api';
 import { UserProvider } from './contexts/UserContext';
+import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout/Layout';
 import Dashboard from './pages/Dashboard/Dashboard';
 import NotAllowed from './pages/NotAllowed';
@@ -78,7 +79,7 @@ function App() {
           <Route
             path="/*"
             element={
-              isAuthenticated ? (
+              <ProtectedRoute isAuthenticated={isAuthenticated} isLoading={isLoading}>
                 <Layout>
                   <Routes>
                     <Route path="/" element={<Dashboard />} />
@@ -112,9 +113,7 @@ function App() {
                     <Route path="/assistant/admin" element={<AssistantAdminPage />} />
                   </Routes>
                 </Layout>
-              ) : (
-                <Navigate to="/login" replace />
-              )
+              </ProtectedRoute>
             }
           />
         </Routes>

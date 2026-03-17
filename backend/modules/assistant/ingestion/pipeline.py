@@ -294,13 +294,39 @@ class IngestionPipeline:
             for key, val in list(meta.items()):
                 if isinstance(val, str):
                     meta[key] = val.encode('utf-8', errors='replace').decode('utf-8', errors='replace')
+            # Build a deterministic ID from source + subsource + chunk position so
+            # re-ingesting the same document overwrites old chunks instead of creating
+            # duplicate entries in Qdrant.
+            source_id_val = meta.get('source_id', 'unknown')
+            subsource_id_val = meta.get('subsource_id', 'unknown')
+            chunk_pos = meta.get('chunk_position', 0)
+            doc_id = f"source_{source_id_val}_{subsource_id_val}_chunk_{chunk_pos}"
             points.append({
-                'id': str(uuid_lib.uuid4()),
+                'id': doc_id,
                 'embedding': embedding,
                 'metadata': meta,
             })
             if (pt_idx + 1) % 50 == 0:
                 gevent.sleep(0)
+
+        # --- Delete old chunks for these documents before upserting ---
+        # This ensures that re-processing a document (e.g. after a retry or
+        # manual re-sync) removes stale chunks before inserting new ones.
+        subsource_ids_in_batch: set = set()
+        for chunk in chunked:
+            sid = chunk['metadata'].get('subsource_id')
+            if sid:
+                subsource_ids_in_batch.add(sid)
+        if subsource_ids_in_batch:
+            try:
+                for sid in subsource_ids_in_batch:
+                    self.vector_store.delete_by_metadata({'subsource_id': sid})
+                logger.info(
+                    "[Pipeline] Deleted old chunks for %d subsources before upserting",
+                    len(subsource_ids_in_batch),
+                )
+            except Exception as cleanup_err:
+                logger.warning("[Pipeline] Pre-ingestion cleanup failed: %s", cleanup_err)
 
         # --- Store ---
         t_store_start = time.monotonic()
@@ -444,6 +470,9 @@ class IngestionPipeline:
             total_stored = 0
             total_failed = 0
             batch_num = 0
+            # Track subsources already processed in this run to guard against
+            # connector bugs that yield the same document more than once.
+            seen_subsources: set = set()
 
             # Check if parent-child chunking is enabled (from admin config)
             parent_child_enabled = False
@@ -509,6 +538,16 @@ class IngestionPipeline:
                     )
 
                 metadata = doc.to_metadata()
+                # Guard against connector bugs that yield the same document twice.
+                subsource_id = metadata.get('subsource_id')
+                if subsource_id:
+                    if subsource_id in seen_subsources:
+                        logger.warning(
+                            "[Pipeline] Duplicate subsource '%s' detected — skipping",
+                            subsource_id,
+                        )
+                        continue
+                    seen_subsources.add(subsource_id)
                 # Use document-level permission tags when present; fall back to
                 # the source-level tags configured in the assistant settings.
                 if not (metadata.get('permission_tags') or []):

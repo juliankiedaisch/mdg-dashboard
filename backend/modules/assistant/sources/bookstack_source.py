@@ -384,6 +384,16 @@ class BookStackSource(BaseSource):
         if page_id in self._page_tags:
             return self._page_tags[page_id]
 
+        # If the tag cache has been frozen (i.e. we are in the attachment phase)
+        # do NOT make new API calls for pages we haven't seen yet.  Fall back to
+        # book-level tags so all attachment chunks remain consistent.
+        if getattr(self, '_permission_tags_frozen', False):
+            logger.debug(
+                "[BookStack] Tags frozen — page %d not in cache, using book %d tags",
+                page_id, book_id,
+            )
+            return self._resolve_book_tags(book_id)
+
         if not self.map_permissions or not self._role_tag_names:
             tags = self._resolve_book_tags(book_id)
             self._page_tags[page_id] = tags
@@ -412,6 +422,15 @@ class BookStackSource(BaseSource):
         """
         if chapter_id in self._chapter_tags:
             return self._chapter_tags[chapter_id]
+
+        # If the tag cache has been frozen, fall back to book-level tags without
+        # making new API calls (same rationale as _resolve_page_tags).
+        if getattr(self, '_permission_tags_frozen', False):
+            logger.debug(
+                "[BookStack] Tags frozen — chapter %d not in cache, using book %d tags",
+                chapter_id, book_id,
+            )
+            return self._resolve_book_tags(book_id)
 
         if not self.map_permissions or not self._role_tag_names:
             tags = self._resolve_book_tags(book_id)
@@ -681,6 +700,7 @@ class BookStackSource(BaseSource):
         # ── Phase 1: Filter and collect downloadable attachments ───
         downloadable = []
         skipped = 0
+        skipped_size = 0
         for att in attachments:
             if att.get('external', False):
                 skipped += 1
@@ -697,15 +717,53 @@ class BookStackSource(BaseSource):
                 skipped += 1
                 continue
 
+            # Size check: BookStack does not expose file size in the list
+            # endpoint, so we must fetch the attachment detail here to read the
+            # base64 content length.  If the decoded size would exceed the
+            # configured limit we skip the file immediately — before spawning a
+            # worker greenlet — to avoid wasting bandwidth and Docling resources.
+            # The pre-fetched detail is stored so the worker greenlet can use it
+            # directly without a second round-trip.
+            prefetched_detail = None
+            if self.max_attachment_size_mb > 0:
+                detail = self._api_get(f'attachments/{att_id}')
+                time.sleep(self._REQUEST_DELAY)
+                if detail and detail.get('content'):
+                    try:
+                        # base64 is ~33 % larger than binary, so multiply by 0.75
+                        estimated_size_mb = (len(detail['content']) * 0.75) / (1024 * 1024)
+                        if estimated_size_mb > self.max_attachment_size_mb:
+                            logger.info(
+                                "[BookStack] Attachment '%s' (id=%d, ~%.2f MB) exceeds "
+                                "size limit of %.0f MB — skipping",
+                                att_name, att_id, estimated_size_mb,
+                                self.max_attachment_size_mb,
+                            )
+                            skipped_size += 1
+                            continue
+                        # Cache so the worker doesn't re-download
+                        prefetched_detail = detail
+                    except Exception as size_err:
+                        logger.warning(
+                            "[BookStack] Size check failed for '%s': %s — skipping",
+                            att_name, size_err,
+                        )
+                        skipped += 1
+                        continue
+
             downloadable.append({
                 'att_id': att_id,
                 'att_name': att_name,
                 'page_id': page_id,
                 'ext': ext,
+                'prefetched_detail': prefetched_detail,
             })
 
-        logger.info("[BookStack] %d attachments eligible, %d skipped (unsupported/external)",
-                    len(downloadable), skipped)
+        logger.info(
+            "[BookStack] %d attachments eligible, %d skipped (unsupported/external), "
+            "%d skipped (size limit)",
+            len(downloadable), skipped, skipped_size,
+        )
 
         if not downloadable:
             return
@@ -722,8 +780,9 @@ class BookStackSource(BaseSource):
             page_id = att_info['page_id']
             ext = att_info['ext']
 
-            # Download
-            detail = self._api_get(f'attachments/{att_id}')
+            # Download — use the detail pre-fetched during Phase 1 (size check)
+            # if available; otherwise fall back to a fresh API request.
+            detail = att_info.get('prefetched_detail') or self._api_get(f'attachments/{att_id}')
             if not detail or not detail.get('content'):
                 logger.debug("[BookStack] Attachment %d (%s): no content", att_id, att_name)
                 return None
@@ -735,7 +794,10 @@ class BookStackSource(BaseSource):
                                att_id, att_name, e)
                 return None
 
-            # ── Size limit check ───────────────────────────────────
+            # ── Size limit check (belt-and-suspenders) ────────────
+            # Phase 1 already filtered out oversized attachments when
+            # max_attachment_size_mb > 0.  This secondary check catches any
+            # edge case where a file slipped through (e.g. no size limit set).
             if self.max_attachment_size_mb > 0:
                 file_size_mb = len(file_data) / (1024 * 1024)
                 if file_size_mb > self.max_attachment_size_mb:
@@ -934,6 +996,17 @@ class BookStackSource(BaseSource):
         # the first attachment chunk.
         if perm_tags_seen:
             self._auto_create_tags(list(perm_tags_seen))
+
+        # Freeze permission tag cache before starting the attachment phase.
+        # All attachments processed in any batch will use the tags resolved
+        # during the fast section above.  This prevents race conditions where
+        # the same attachment receives different permission tags depending on
+        # which batch it is processed in.
+        self._permission_tags_frozen = True
+        logger.info(
+            "[BookStack] Permission tags frozen: %d books, %d pages, %d chapters",
+            len(self._book_tags), len(self._page_tags), len(self._chapter_tags),
+        )
 
         # ── Stream attachments ─────────────────────────────────────
         # Each DocumentChunk is yielded immediately after extraction so the

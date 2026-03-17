@@ -478,103 +478,161 @@ def run_ingestion_worker(app):
 
                     pipeline = IngestionPipeline()
 
-                    if task_dict['task_type'] == 'full_rebuild':
-                        # Rebuild all sources — pass cancel_check so every
-                        # batch can abort early when cancel is requested.
-                        all_sources = get_all_sources()
-                        result = pipeline.rebuild_all(
-                            all_sources,
-                            cancel_check=_timeout_or_cancel_check,
-                        )
-
-                        # Persist per-source document counts and sync status
-                        for sr in result.get('source_results', []):
-                            if sr.get('source_id'):
-                                update_sync_status(
-                                    sr['source_id'],
-                                    status='success' if sr['success'] else 'error',
-                                    message=sr['message'],
-                                    document_count=sr['documents_processed'],
-                                )
-                                add_log(
-                                    'sync',
-                                    f"Full rebuild — {sr['name']}: {sr['message']}",
-                                    details=sr,
-                                )
-
-                        add_log('sync', f"Full rebuild complete: {result['message']}")
-                    else:
-                        # Single source sync/rebuild — pass cancel_check
-                        source = get_source(task_dict['source_id'])
-                        if not source:
-                            raise ValueError(
-                                f"Source {task_dict['source_id']} not found")
-
-                        incremental = task_dict['task_type'] == 'sync'
-                        result = pipeline.ingest_source(
-                            source,
-                            incremental=incremental,
-                            cancel_check=_timeout_or_cancel_check,
-                        )
-
-                        # Only update document_count in the DB when documents
-                        # were actually processed.  Incremental syncs that find
-                        # no new content must NOT reset the count to 0.
-                        docs = result.get('documents_processed', 0)
-                        doc_count_kwarg = {}
-                        if not incremental:
-                            # Full rebuild: always set (could be 0 if source empty)
-                            doc_count_kwarg['document_count'] = docs
-                        elif docs > 0:
-                            # Incremental with new docs: update count
-                            doc_count_kwarg['document_count'] = docs
-
-                        update_sync_status(
-                            task_dict['source_id'],
-                            status='success' if result['success'] else 'error',
-                            message=result['message'],
-                            **doc_count_kwarg,
-                        )
-                        add_log('sync',
-                                f"Source {source['name']}: {result['message']}",
-                                details=result)
-
-                    # Mark DB task as completed
-                    db_task = SyncTask.query.get(task_id)
-                    if db_task and db_task.status != 'cancelled':
-                        db_task.status = ('completed' if result.get('success')
-                                          else 'error')
-                        db_task.message = result.get('message', '')
-                        db_task.progress = {
-                            'documents_processed': result.get(
-                                'documents_processed', 0),
-                            'chunks_stored': result.get('chunks_stored', 0),
-                        }
-                        db_task.completed_at = datetime.now(timezone.utc)
-                        db.session.commit()
-
-                    logger.info("[Worker] Task id=%d completed: %s",
-                                task_id, result.get('message', ''))
-
-                    elapsed_s = time.monotonic() - task_started_at
-                    emit_progress('worker',
-                                  f"Task abgeschlossen: {result.get('message', '')} ({int(elapsed_s)}s)",
-                                  task_id=task_id,
-                                  level='success' if result.get('success') else 'error',
-                                  detail={
-                                      'documents_processed': result.get('documents_processed', 0),
-                                      'chunks_stored': result.get('chunks_stored', 0),
-                                      'elapsed_seconds': round(elapsed_s, 1),
-                                  })
-
-                    # ── GPU cleanup: unload embedding model from Ollama VRAM ──
-                    # Only the chat model should stay resident; embedding and
-                    # summarization models are unloaded after each pipeline run
-                    # to free GPU memory.
+                    # Acquire a source-specific PostgreSQL advisory lock to prevent
+                    # concurrent ingestion of the same source (e.g. crash recovery
+                    # re-queuing while the original job is still running, or
+                    # horizontal scaling with multiple worker processes).
+                    # pg_try_advisory_lock is non-blocking — it returns False
+                    # immediately if the lock is already held, avoiding a gevent
+                    # stall on a blocking pg_advisory_lock call.
+                    lock_id = task_dict['source_id'] if task_dict['source_id'] != 0 else 999999
+                    lock_acquired = False
                     try:
-                        _unload_pipeline_models()
-                    except Exception as unload_err:
-                        logger.warning("[Worker] GPU cleanup failed: %s", unload_err)
+                        from sqlalchemy import text as sa_text
+                        lock_result = db.session.execute(
+                            sa_text("SELECT pg_try_advisory_lock(:lock_id)"),
+                            {'lock_id': lock_id},
+                        ).scalar()
+                        lock_acquired = bool(lock_result)
+                    except Exception as lock_err:
+                        # Non-PostgreSQL backend (e.g. SQLite in tests) or advisory
+                        # locks disabled — proceed without the lock.
+                        logger.warning(
+                            "[Worker] Advisory lock not available (non-PostgreSQL?): "
+                            "%s — proceeding without distributed lock", lock_err,
+                        )
+                        lock_acquired = True
+
+                    if not lock_acquired:
+                        logger.warning(
+                            "[Worker] Source %d is already being ingested "
+                            "(advisory lock held) — skipping task %d",
+                            lock_id, task_id,
+                        )
+                        db_task = SyncTask.query.get(task_id)
+                        if db_task:
+                            db_task.status = 'error'
+                            db_task.message = (
+                                f'Ingestion already running for source {lock_id} — skipped'
+                            )
+                            db_task.completed_at = datetime.now(timezone.utc)
+                            db.session.commit()
+                        _current_task = None
+                        continue  # triggers inner finally: db.session.remove()
+
+                    logger.info("[Worker] Acquired advisory lock for source %d", lock_id)
+
+                    try:  # ── lock release on exit ──────────────────────────
+
+                        if task_dict['task_type'] == 'full_rebuild':
+                            # Rebuild all sources — pass cancel_check so every
+                            # batch can abort early when cancel is requested.
+                            all_sources = get_all_sources()
+                            result = pipeline.rebuild_all(
+                                all_sources,
+                                cancel_check=_timeout_or_cancel_check,
+                            )
+
+                            # Persist per-source document counts and sync status
+                            for sr in result.get('source_results', []):
+                                if sr.get('source_id'):
+                                    update_sync_status(
+                                        sr['source_id'],
+                                        status='success' if sr['success'] else 'error',
+                                        message=sr['message'],
+                                        document_count=sr['documents_processed'],
+                                    )
+                                    add_log(
+                                        'sync',
+                                        f"Full rebuild — {sr['name']}: {sr['message']}",
+                                        details=sr,
+                                    )
+
+                            add_log('sync', f"Full rebuild complete: {result['message']}")
+                        else:
+                            # Single source sync/rebuild — pass cancel_check
+                            source = get_source(task_dict['source_id'])
+                            if not source:
+                                raise ValueError(
+                                    f"Source {task_dict['source_id']} not found")
+
+                            incremental = task_dict['task_type'] == 'sync'
+                            result = pipeline.ingest_source(
+                                source,
+                                incremental=incremental,
+                                cancel_check=_timeout_or_cancel_check,
+                            )
+
+                            # Only update document_count in the DB when documents
+                            # were actually processed.  Incremental syncs that find
+                            # no new content must NOT reset the count to 0.
+                            docs = result.get('documents_processed', 0)
+                            doc_count_kwarg = {}
+                            if not incremental:
+                                # Full rebuild: always set (could be 0 if source empty)
+                                doc_count_kwarg['document_count'] = docs
+                            elif docs > 0:
+                                # Incremental with new docs: update count
+                                doc_count_kwarg['document_count'] = docs
+
+                            update_sync_status(
+                                task_dict['source_id'],
+                                status='success' if result['success'] else 'error',
+                                message=result['message'],
+                                **doc_count_kwarg,
+                            )
+                            add_log('sync',
+                                    f"Source {source['name']}: {result['message']}",
+                                    details=result)
+
+                        # Mark DB task as completed
+                        db_task = SyncTask.query.get(task_id)
+                        if db_task and db_task.status != 'cancelled':
+                            db_task.status = ('completed' if result.get('success')
+                                              else 'error')
+                            db_task.message = result.get('message', '')
+                            db_task.progress = {
+                                'documents_processed': result.get(
+                                    'documents_processed', 0),
+                                'chunks_stored': result.get('chunks_stored', 0),
+                            }
+                            db_task.completed_at = datetime.now(timezone.utc)
+                            db.session.commit()
+
+                        logger.info("[Worker] Task id=%d completed: %s",
+                                    task_id, result.get('message', ''))
+
+                        elapsed_s = time.monotonic() - task_started_at
+                        emit_progress('worker',
+                                      f"Task abgeschlossen: {result.get('message', '')} ({int(elapsed_s)}s)",
+                                      task_id=task_id,
+                                      level='success' if result.get('success') else 'error',
+                                      detail={
+                                          'documents_processed': result.get('documents_processed', 0),
+                                          'chunks_stored': result.get('chunks_stored', 0),
+                                          'elapsed_seconds': round(elapsed_s, 1),
+                                      })
+
+                        # ── GPU cleanup: unload embedding model from Ollama VRAM ──
+                        # Only the chat model should stay resident; embedding and
+                        # summarization models are unloaded after each pipeline run
+                        # to free GPU memory.
+                        try:
+                            _unload_pipeline_models()
+                        except Exception as unload_err:
+                            logger.warning("[Worker] GPU cleanup failed: %s", unload_err)
+
+                    finally:
+                        # Release advisory lock so other workers/processes can proceed.
+                        try:
+                            from sqlalchemy import text as sa_text
+                            db.session.execute(
+                                sa_text("SELECT pg_advisory_unlock(:lock_id)"),
+                                {'lock_id': lock_id},
+                            )
+                            logger.info("[Worker] Released advisory lock for source %d", lock_id)
+                        except Exception as unlock_err:
+                            logger.warning("[Worker] Advisory lock release failed: %s", unlock_err)
 
                 except PipelineCancelledError as ce:
                     # Pipeline aborted cleanly due to a cancellation request.

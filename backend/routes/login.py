@@ -2,8 +2,45 @@ from flask import session, redirect, url_for, Blueprint, request, jsonify
 from src.decorators import login_required
 import uuid, sys, time
 from datetime import datetime, timedelta
+from urllib.parse import urlparse, urljoin
 from src import globals
 from src.db_functions import upsert_user_with_groups
+
+
+def is_safe_url(target):
+    """
+    Validate that the redirect URL is safe (same origin).
+    Prevents open redirect vulnerabilities.
+    
+    Security checks:
+    1. URL must be relative (starts with /)
+    2. OR URL must have the same origin as the application
+    3. Reject URLs with javascript:, data:, etc. schemes
+    """
+    if not target:
+        return False
+    
+    # Remove null bytes
+    target = target.replace('\x00', '')
+    
+    # Reject javascript:, data:, vbscript: schemes
+    if target.lower().startswith(('javascript:', 'data:', 'vbscript:')):
+        return False
+    
+    # Allow relative URLs (e.g., /survey/2)
+    # But reject protocol-relative URLs (//evil.com)
+    if target.startswith('/') and not target.startswith('//'):
+        return True
+    
+    # For absolute URLs, check same origin
+    try:
+        ref_url = urlparse(request.host_url)
+        test_url = urlparse(urljoin(request.host_url, target))
+        
+        return test_url.scheme in ('http', 'https') and \
+               ref_url.netloc == test_url.netloc
+    except Exception:
+        return False
 
 
 def get_session_expiry_midnight():
@@ -25,7 +62,21 @@ def init_routes(oauth, db_session):
         # Set session ID if not already set
         if 'session_id' not in session:
             session['session_id'] = str(uuid.uuid4())
+        
+        # Get the intended redirect URL from query parameter
+        redirect_after_login = request.args.get('redirect', '/')
+        
+        # Validate the redirect URL to prevent open redirect attacks
+        if not is_safe_url(redirect_after_login):
+            print(f"Unsafe redirect URL blocked: {redirect_after_login}", flush=True, file=sys.stderr)
+            redirect_after_login = '/'
+        
+        # Store the redirect URL in the session
+        session['redirect_after_login'] = redirect_after_login
+        
         print(f"Login initiated, session ID: {session.get('session_id', 'none')}", flush=True, file=sys.stderr)
+        print(f"Redirect after login: {redirect_after_login}", flush=True, file=sys.stderr)
+        
         redirect_uri = url_for('login.authorize', _external=True)
         return oauth.oauth_provider.authorize_redirect(redirect_uri=redirect_uri)
 
@@ -93,9 +144,19 @@ def init_routes(oauth, db_session):
         # Store user in database
         upsert_user_with_groups(user_info["uuid"], user_info['preferred_username'], user_info["groups"], db_session)
 
-        # Redirect back to frontend root (not /login to avoid redirect loop)
-        print(f"OAuth success! Redirecting to: {frontend_url}/", flush=True, file=sys.stderr)
-        return redirect(frontend_url)
+        # Get the stored redirect URL (default to '/')
+        redirect_path = session.pop('redirect_after_login', '/')
+        
+        # Validate again (defense in depth)
+        if not is_safe_url(redirect_path):
+            print(f"Unsafe redirect URL in session: {redirect_path}", flush=True, file=sys.stderr)
+            redirect_path = '/'
+        
+        # Build the full redirect URL
+        full_redirect_url = frontend_url + redirect_path
+        
+        print(f"OAuth success! Redirecting to: {full_redirect_url}", flush=True, file=sys.stderr)
+        return redirect(full_redirect_url)
     
     @bp.route('/api/logout')
     def logout():
